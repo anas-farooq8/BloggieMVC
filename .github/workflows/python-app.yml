@@ -29,7 +29,7 @@ jobs:
       - name: Build Docker image
         run: |
           TAG=${{ github.sha }}
-          docker build -t anasfarooq/bloggie-web:latest -t anasfarooq/bloggie-web:${TAG} .
+          docker build -t anasfarooq/bloggie-web:latest -t anasfarooq/bloggie-web:${TAG} -f Bloggie.Web/Dockerfile Bloggie.Web/
 
       # Step 5: Push the Docker image to Docker Hub
       - name: Push Docker image
