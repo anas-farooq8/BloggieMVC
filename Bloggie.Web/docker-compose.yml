@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - bloggie_network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+    networks:
+      - bloggie_network
+
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    depends_on:
+      - postgres
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__BloggieDbConnectionString=Host=postgres;Port=5432;Database=BloggieDb;Username=postgres;Password=postgres
+      - ConnectionStrings__BloggieAuthDbConnectionString=Host=postgres;Port=5432;Database=BloggieAuthDb;Username=postgres;Password=postgres
+    networks:
+      - bloggie_network
+
+volumes:
+  postgres_data:
+
+networks:
+  bloggie_network:
+    driver: bridge
